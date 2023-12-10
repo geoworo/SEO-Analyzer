@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY / .
 
-RUN ./gradlew installDist
+RUN gradle installDist
 
 EXPOSE 7070
 
