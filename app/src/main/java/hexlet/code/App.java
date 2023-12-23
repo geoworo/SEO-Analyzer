@@ -3,7 +3,9 @@ package hexlet.code;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -28,7 +30,7 @@ public class App {
 
     private static TemplateEngine createTemplateEngine() {
         ClassLoader classLoader = App.class.getClassLoader();
-        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("/templates/", classLoader);
         return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
@@ -40,7 +42,8 @@ public class App {
     public static Javalin getApp() throws IOException, SQLException {
         JavalinJte.init(createTemplateEngine());
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(System.getenv().getOrDefault("JDBC_DATABASE_URL",
+                "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;"));
 
         var dataSource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
@@ -49,15 +52,18 @@ public class App {
                 var statement = connection.createStatement()) {
             statement.execute(sql);
         }
+
         BaseRepository.dataSource = dataSource;
 
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
         });
 
-        app.get("/", ctx -> {
-            ctx.result("Hello World");
-        });
+        app.post(NamedRoutes.rootPath(), UrlController::create);
+
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+
 
         return app;
     }
