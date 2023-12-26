@@ -4,6 +4,7 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.UrlController;
+import hexlet.code.model.Url;
 import hexlet.code.repository.BaseRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -12,10 +13,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.rendering.template.JavalinJte;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 public class App {
     public static int getPort() {
@@ -24,13 +29,19 @@ public class App {
     }
 
     public static String readResourceFile(String filename) throws IOException {
-        var path = Paths.get("src", "main", "resources", filename);
-        return Files.readString(path);
+        InputStream inputStream = App.class.getClassLoader().getResourceAsStream(filename);
+        if (inputStream == null) {
+            throw new RuntimeException("Resource not found");
+        } else {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        }
+
     }
 
     private static TemplateEngine createTemplateEngine() {
         ClassLoader classLoader = App.class.getClassLoader();
-        ResourceCodeResolver codeResolver = new ResourceCodeResolver("/templates/", classLoader);
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
         return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
@@ -40,7 +51,6 @@ public class App {
     }
 
     public static Javalin getApp() throws IOException, SQLException {
-        JavalinJte.init(createTemplateEngine());
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(System.getenv().getOrDefault("JDBC_DATABASE_URL",
                 "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;"));
@@ -58,12 +68,12 @@ public class App {
             config.plugins.enableDevLogging();
         });
 
-        app.post(NamedRoutes.rootPath(), UrlController::create);
+        JavalinJte.init(createTemplateEngine());
 
-        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
-        app.get(NamedRoutes.urlsPath(), UrlController::index);
         app.get(NamedRoutes.rootPath(), UrlController::showRoot);
-
+        app.post(NamedRoutes.rootPath(), UrlController::create);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
 
         return app;
     }

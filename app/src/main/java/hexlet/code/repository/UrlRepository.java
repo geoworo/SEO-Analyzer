@@ -19,7 +19,6 @@ public class UrlRepository extends BaseRepository {
             preparedStatement.setTimestamp(2, createdAt);
             preparedStatement.executeUpdate();
             var keys = preparedStatement.getGeneratedKeys();
-
             if (keys.next()) {
                 url.setId(keys.getLong(1));
                 url.setCreatedAt(createdAt);
@@ -47,9 +46,19 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static Optional<Url> find(Long id) throws SQLException {
-        var url = getUrls().stream()
-                .filter(u -> u.getId() == id)
-                .findAny();
-        return url;
+        var sql = "SELECT * FROM urls WHERE id = ?";
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            var resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                var name = resultSet.getString("name");
+                var createdAt = resultSet.getTimestamp("created_at");
+                Url url = new Url(name);
+                url.setCreatedAt(createdAt);
+                return Optional.of(url);
+            }
+            return Optional.empty();
+        }
     }
 }
