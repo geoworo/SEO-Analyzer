@@ -71,7 +71,7 @@ public class App {
         JavalinJte.init(createTemplateEngine());
 
         app.get(NamedRoutes.rootPath(), UrlController::showRoot);
-        app.post(NamedRoutes.rootPath(), UrlController::create);
+        app.post(NamedRoutes.urlsPath(), UrlController::create);
         app.get(NamedRoutes.urlsPath(), UrlController::index);
         app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
 

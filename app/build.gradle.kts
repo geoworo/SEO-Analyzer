@@ -4,6 +4,7 @@ plugins {
     id("application")
     id("io.freefair.lombok") version "8.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    jacoco
 }
 
 group = "hexlet.code"
@@ -26,6 +27,11 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation("io.javalin:javalin-rendering:5.6.2")
     implementation("com.zaxxer:HikariCP:5.0.1")
+
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
 }
 
 tasks.test {

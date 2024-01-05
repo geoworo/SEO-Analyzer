@@ -32,16 +32,19 @@ public class UrlController {
     }
 
     public static void show(Context ctx) throws SQLException {
-        var id = ctx.formParamAsClass("id", Long.class).get();
+        var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url with id " + id + " not found"));
         var page = new UrlPage(url);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setType(ctx.consumeSessionAttribute("type"));
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
     }
 
     public static void create(Context ctx) throws SQLException {
         var param = ctx.formParamAsClass("url", String.class).getOrDefault(null);
         URL addedUrl = null;
+
         try {
             addedUrl = new URL(param);
         } catch (MalformedURLException e) {
