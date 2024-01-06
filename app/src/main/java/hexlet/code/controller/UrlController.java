@@ -54,21 +54,21 @@ public class UrlController {
         }
 
         if (addedUrl != null) {
-                String protocol = addedUrl.getProtocol();
-                String authority = addedUrl.getAuthority();
-                String host = String.format("%s://%s", protocol, authority);
-                var url = new Url(host);
+            String protocol = addedUrl.getProtocol();
+            String authority = addedUrl.getAuthority();
+            String host = String.format("%s://%s", protocol, authority);
+            var url = new Url(host);
 
-                if (UrlRepository.getUrls().stream().noneMatch(o -> o.getName().equals(host))) {
-                    UrlRepository.save(url);
-                    ctx.sessionAttribute("flash", "Страница успешно добавлена");
-                    ctx.sessionAttribute("type", "success");
-                    ctx.redirect(NamedRoutes.urlsPath());
-                } else {
-                    ctx.sessionAttribute("flash", "Страница уже существует");
-                    ctx.sessionAttribute("type", "info");
-                    ctx.redirect(NamedRoutes.urlsPath());
-                }
+            if (UrlRepository.getUrls().stream().noneMatch(o -> o.getName().equals(host))) {
+                UrlRepository.save(url);
+                ctx.sessionAttribute("flash", "Страница успешно добавлена");
+                ctx.sessionAttribute("type", "success");
+                ctx.redirect(NamedRoutes.urlsPath());
+            } else {
+                ctx.sessionAttribute("flash", "Страница уже существует");
+                ctx.sessionAttribute("type", "info");
+                ctx.redirect(NamedRoutes.urlsPath());
+            }
         }
     }
 }

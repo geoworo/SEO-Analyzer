@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class UrlRepository extends BaseRepository {
-    public static void save (Url url) throws SQLException {
+    public static void save(Url url) throws SQLException {
         var sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
         var createdAt = new Timestamp(System.currentTimeMillis());
         try (var conn = dataSource.getConnection();
