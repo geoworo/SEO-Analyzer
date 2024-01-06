@@ -3,7 +3,6 @@ plugins {
     id("checkstyle")
     id("application")
     id("io.freefair.lombok") version "8.3"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
     jacoco
 }
 
