@@ -14,11 +14,11 @@ public class UrlRepository extends BaseRepository {
         var sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
         var createdAt = new Timestamp(System.currentTimeMillis());
         try (var conn = dataSource.getConnection();
-             var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, createdAt);
-            preparedStatement.executeUpdate();
-            var keys = preparedStatement.getGeneratedKeys();
+             var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, url.getName());
+            stmt.setTimestamp(2, createdAt);
+            stmt.executeUpdate();
+            var keys = stmt.getGeneratedKeys();
             if (keys.next()) {
                 url.setId(keys.getLong(1));
                 url.setCreatedAt(createdAt);
@@ -31,8 +31,8 @@ public class UrlRepository extends BaseRepository {
     public static List<Url> getUrls() throws SQLException {
         var sql = "SELECT * FROM urls";
         try (var conn = dataSource.getConnection();
-             var statement = conn.prepareStatement(sql)) {
-            var urls = statement.executeQuery();
+             var stmt = conn.prepareStatement(sql)) {
+            var urls = stmt.executeQuery();
             var result = new ArrayList<Url>();
             while (urls.next()) {
                 var id = urls.getLong("id");

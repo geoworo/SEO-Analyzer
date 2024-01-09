@@ -26,6 +26,9 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation("io.javalin:javalin-rendering:5.6.2")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.konghq:unirest-java-core:4.2.4")
+    implementation("com.konghq:unirest-java-bom:4.2.4")
+    implementation("org.jsoup:jsoup:1.17.2")
 
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
