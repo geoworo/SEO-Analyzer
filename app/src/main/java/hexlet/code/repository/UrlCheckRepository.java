@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public class UrlCheckRepository extends BaseRepository {
     public static void save(UrlCheck check) throws SQLException {
-        var sql = "INSERT INTO url_checks (url_id, status_code, h1, title, " +
-                "description, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        var sql = "INSERT INTO url_checks (url_id, status_code, h1, title, "
+                + "description, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         var createdAt = new Timestamp(System.currentTimeMillis());
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -34,7 +34,7 @@ public class UrlCheckRepository extends BaseRepository {
     }
 
     public static List<UrlCheck> getChecks(Long urlId) throws SQLException {
-        var sql= "SELECT * FROM url_checks WHERE url_id = ?";
+        var sql = "SELECT * FROM url_checks WHERE url_id = ?";
         try (var conn = dataSource.getConnection();
             var stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, urlId);
@@ -56,7 +56,7 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
-    public static Optional<UrlCheck> find(Long urlId) throws SQLException {
+    public static Optional<UrlCheck> findLastCheck(Long urlId) throws SQLException {
         var sql = "SELECT * FROM url_checks WHERE urlId = ? ORDER BY created_at DESC LIMIT 1";
         try (var conn = dataSource.getConnection();
             var stmt = conn.prepareStatement(sql)) {

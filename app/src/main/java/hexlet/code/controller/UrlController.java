@@ -4,6 +4,7 @@ import hexlet.code.dto.BasePage;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
@@ -33,9 +34,10 @@ public class UrlController {
 
     public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
+        var checks = UrlCheckRepository.getChecks(id);
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url with id " + id + " not found"));
-        var page = new UrlPage(url);
+        var page = new UrlPage(url, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
