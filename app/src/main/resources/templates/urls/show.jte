@@ -60,6 +60,7 @@ content = @`
                             ${App.getFormattedTime(check.getCreatedAt())}
                         </td>
                     </tr>
+                    @endfor
                 </tbody>
         </table>
     </div>
