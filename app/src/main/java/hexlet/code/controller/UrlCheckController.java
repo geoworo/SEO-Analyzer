@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 public class UrlCheckController {
     public static void check(Context ctx) throws SQLException {
-        var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+        var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Id " + id + " not found"));
         String name = url.getName();
