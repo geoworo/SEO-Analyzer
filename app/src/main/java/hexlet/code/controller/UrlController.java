@@ -31,7 +31,7 @@ public class UrlController {
         var urls = new HashMap<Url, UrlCheck>();
         for (var url : list) {
             UrlCheckRepository.findLastCheck(url.getId()).ifPresentOrElse(
-                    (o) -> urls.put(url,o),
+                    (o) -> urls.put(url, o),
                     () -> urls.put(url, null)
             );
         }

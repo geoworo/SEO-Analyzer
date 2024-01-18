@@ -1,15 +1,19 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import okhttp3.mockwebserver.MockWebServer;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 import static hexlet.code.repository.UrlRepository.getUrls;
@@ -98,6 +102,24 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/urls/0");
             assertThat(response.code()).isEqualTo(404);
+        });
+    }
+
+    @Test
+    public void testChecks() throws IOException, SQLException {
+        var page = Files.readString(Paths.get("./src/test/resources/test.html"));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(page));
+        var path = mockWebServer.url("/").toString();
+        Url url = new Url(path);
+        UrlRepository.save(url);
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.post("/urls/" + url.getId() + "/checks");
+            assertThat(response.code()).isEqualTo(200);
+            var check = UrlCheckRepository.findLastCheck(url.getId()).get();
+            assertThat(check.getTitle()).isEqualTo("Title");
+            assertThat(check.getH1()).isEqualTo("h1");
+            assertThat(check.getDescription()).isEqualTo("description");
+            assertThat(check.getStatusCode()).isEqualTo(200);
         });
     }
 }

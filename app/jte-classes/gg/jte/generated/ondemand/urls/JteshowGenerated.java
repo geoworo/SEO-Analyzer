@@ -20,7 +20,7 @@ public final class JteshowGenerated {
 				jteOutput.writeUserContent(page.getUrl().getName());
 				jteOutput.writeContent("</td>\n            </tr>\n            <tr>\n                <td>Дата создания</td>\n                <td>");
 				jteOutput.setContext("td", null);
-				jteOutput.writeUserContent(page.getUrl().getCreatedAt().toString());
+				jteOutput.writeUserContent(App.getFormattedTime(page.getUrl().getCreatedAt()));
 				jteOutput.writeContent("</td>\n            </tr>\n            </tbody>\n        </table>\n        <h2 class=\"mt-5\">Проверки</h2>\n        <form method=\"post\"");
 				var __jte_html_attribute_0 = NamedRoutes.checksPath(page.getUrl().getId());
 				if (gg.jte.runtime.TemplateUtils.isAttributeRendered(__jte_html_attribute_0)) {
