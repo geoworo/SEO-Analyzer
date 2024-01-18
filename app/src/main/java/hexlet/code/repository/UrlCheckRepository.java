@@ -21,7 +21,7 @@ public class UrlCheckRepository extends BaseRepository {
             stmt.setString(3, check.getH1());
             stmt.setString(4, check.getTitle());
             stmt.setString(5, check.getDescription());
-            stmt.setTimestamp(6, check.getCreatedAt());
+            stmt.setTimestamp(6, createdAt);
             stmt.executeUpdate();
             var keys = stmt.getGeneratedKeys();
             if (keys.next()) {
@@ -57,7 +57,7 @@ public class UrlCheckRepository extends BaseRepository {
     }
 
     public static Optional<UrlCheck> findLastCheck(Long urlId) throws SQLException {
-        var sql = "SELECT * FROM url_checks WHERE urlId = ? ORDER BY created_at DESC LIMIT 1";
+        var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC LIMIT 1";
         try (var conn = dataSource.getConnection();
             var stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, urlId);

@@ -4,6 +4,7 @@ import hexlet.code.dto.BasePage;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class UrlController {
 
@@ -25,7 +27,14 @@ public class UrlController {
     }
 
     public static void index(Context ctx) throws SQLException {
-        var urls = UrlRepository.getUrls();
+        var list = UrlRepository.getUrls();
+        var urls = new HashMap<Url, UrlCheck>();
+        for (var url : list) {
+            UrlCheckRepository.findLastCheck(url.getId()).ifPresentOrElse(
+                    (o) -> urls.put(url,o),
+                    () -> urls.put(url, null)
+            );
+        }
         var page = new UrlsPage(urls);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
