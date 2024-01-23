@@ -10,6 +10,6 @@ public class RootController {
         var page = new BasePage();
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
-        ctx.render("showUrls.jte", Collections.singletonMap("page", page));
+        ctx.render("index.jte", Collections.singletonMap("page", page));
     }
 }

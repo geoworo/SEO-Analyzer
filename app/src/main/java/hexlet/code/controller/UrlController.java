@@ -20,15 +20,15 @@ import java.util.HashMap;
 public class UrlController {
 
     public static void showUrls(Context ctx) throws SQLException {
-        var list = UrlRepository.getUrls();
-        var urls = new HashMap<Url, UrlCheck>();
-        for (var url : list) {
+        var urls = UrlRepository.getUrls();
+        var checks = new HashMap<Long, UrlCheck>();
+        for (var url : urls) {
             UrlCheckRepository.findLastCheck(url.getId()).ifPresentOrElse(
-                    (o) -> urls.put(url, o),
-                    () -> urls.put(url, null)
+                    (o) -> checks.put(url.getId(), o),
+                    () -> checks.put(url.getId(), null)
             );
         }
-        var page = new UrlsPage(urls);
+        var page = new UrlsPage(urls, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));

@@ -1,6 +1,7 @@
 @import hexlet.code.App
 @import hexlet.code.util.NamedRoutes
 @import hexlet.code.dto.urls.UrlsPage
+@import hexlet.code.repository.UrlRepository
 @param UrlsPage page
 
 @template.layout.page(
@@ -19,23 +20,23 @@ content = @`
             </thead>
             @if(!page.getUrls().isEmpty())
                 <tbody>
-                @for(var url : page.getUrls().entrySet())
+                @for(var url : page.getUrls())
                     <tr>
                         <td>
-                            ${url.getKey().getId()}
+                            ${url.getId()}
                         </td>
                         <td>
-                            <a href="${NamedRoutes.urlPath(url.getKey().getId())}">
-                                ${url.getKey().getName()}</a>
+                            <a href="${NamedRoutes.urlPath(url.getId())}">
+                                ${url.getName()}</a>
                         </td>
                         <td>
-                            @if(url.getValue() != null)
-                                ${App.getFormattedTime(url.getValue().getCreatedAt())}
+                            @if(page.getChecks().get(url.getId()) != null)
+                                ${App.getFormattedTime(page.getChecks().get(url.getId()).getCreatedAt())}
                             @endif
                         </td>
                         <td>
-                            @if(url.getValue() != null)
-                                ${url.getValue().getStatusCode()}
+                            @if(page.getChecks().get(url.getId()) != null)
+                                ${page.getChecks().get(url.getId()).getStatusCode()}
                             @endif
                         </td>
                     </tr>
