@@ -29,7 +29,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getUrls() throws SQLException {
-        var sql = "SELECT * FROM urls";
+        var sql = "SELECT * FROM urls ORDER BY id";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
             var urls = stmt.executeQuery();

@@ -3,6 +3,7 @@ package hexlet.code;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.RootController;
 import hexlet.code.controller.UrlCheckController;
 import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
@@ -75,10 +76,10 @@ public class App {
 
         JavalinJte.init(createTemplateEngine());
 
-        app.get(NamedRoutes.rootPath(), UrlController::showRoot);
+        app.get(NamedRoutes.rootPath(), RootController::showRoot);
         app.post(NamedRoutes.urlsPath(), UrlController::create);
-        app.get(NamedRoutes.urlsPath(), UrlController::index);
-        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+        app.get(NamedRoutes.urlsPath(), UrlController::showUrls);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::showUrl);
         app.post(NamedRoutes.checksPath("{id}"), UrlCheckController::check);
 
         return app;

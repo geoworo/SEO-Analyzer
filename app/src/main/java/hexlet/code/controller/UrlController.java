@@ -19,14 +19,7 @@ import java.util.HashMap;
 
 public class UrlController {
 
-    public static void showRoot(Context ctx) {
-        var page = new BasePage();
-        page.setFlash(ctx.consumeSessionAttribute("flash"));
-        page.setType(ctx.consumeSessionAttribute("type"));
-        ctx.render("index.jte", Collections.singletonMap("page", page));
-    }
-
-    public static void index(Context ctx) throws SQLException {
+    public static void showUrls(Context ctx) throws SQLException {
         var list = UrlRepository.getUrls();
         var urls = new HashMap<Url, UrlCheck>();
         for (var url : list) {
@@ -41,7 +34,7 @@ public class UrlController {
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));
     }
 
-    public static void show(Context ctx) throws SQLException {
+    public static void showUrl(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var checks = UrlCheckRepository.getChecks(id);
         var url = UrlRepository.find(id)
