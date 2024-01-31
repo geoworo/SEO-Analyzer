@@ -57,13 +57,7 @@ public class UrlController {
         if (addedUrl != null) {
             String protocol = addedUrl.getProtocol();
             String authority = addedUrl.getAuthority();
-            int port = addedUrl.getPort();
-            String host;
-            if (port > -1) {
-                host = String.format("%s://%s:%s", protocol, authority, port);
-            } else {
-                host = String.format("%s://%s", protocol, authority);
-            }
+            String host = String.format("%s://%s", protocol, authority);
             var url = new Url(host);
 
             if (UrlRepository.findByName(host).isEmpty()) {
