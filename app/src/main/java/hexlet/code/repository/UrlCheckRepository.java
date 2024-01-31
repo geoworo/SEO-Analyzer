@@ -79,7 +79,8 @@ public class UrlCheckRepository extends BaseRepository {
     }
 
     public static List<UrlCheck> getLastChecks() throws SQLException {
-        var sql = "SELECT u1.id, u1.url_id, u1.status_code, u1.h1, u1.title, u1.description, u1.created_at "
+        var sql = "SELECT u1.id, u1.url_id, u1.status_code, u1.h1, "
+                + "u1.title, u1.description, u1.created_at "
                 + "FROM url_checks u1 WHERE u1.created_at = "
                 + "(SELECT max(u2.created_at) from url_checks u2 WHERE u2.id = u1.id)";
         try (var conn = dataSource.getConnection();
