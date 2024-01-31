@@ -34,6 +34,8 @@ public class UrlCheckController {
             ctx.sessionAttribute("type", "success");
             ctx.redirect(NamedRoutes.urlPath(id));
         } catch (UnirestException e) {
+            ctx.sessionAttribute("flash", "Страницу не удалось проверить");
+            ctx.sessionAttribute("type", "danger");
             ctx.redirect(NamedRoutes.urlPath(id));
         }
     }

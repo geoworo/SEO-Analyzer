@@ -21,11 +21,9 @@ public class UrlController {
     public static void showUrls(Context ctx) throws SQLException {
         var urls = UrlRepository.getUrls();
         var checks = new HashMap<Long, UrlCheck>();
-        for (var url : urls) {
-            UrlCheckRepository.findLastCheck(url.getId()).ifPresentOrElse(
-                    (o) -> checks.put(url.getId(), o),
-                    () -> checks.put(url.getId(), null)
-            );
+        var lastChecks = UrlCheckRepository.getLastChecks();
+        for (var check : lastChecks) {
+            checks.put(check.getUrlId(), check);
         }
         var page = new UrlsPage(urls, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
@@ -35,9 +33,9 @@ public class UrlController {
 
     public static void showUrl(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
-        var checks = UrlCheckRepository.getChecks(id);
         var url = UrlRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url with id " + id + " not found"));
+        var checks = UrlCheckRepository.getChecks(id);
         var page = new UrlPage(url, checks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
@@ -59,19 +57,25 @@ public class UrlController {
         if (addedUrl != null) {
             String protocol = addedUrl.getProtocol();
             String authority = addedUrl.getAuthority();
-            String host = String.format("%s://%s", protocol, authority);
+            int port = addedUrl.getPort();
+            String host;
+            if (port > -1) {
+                host = String.format("%s://%s:%s", protocol, authority, port);
+            } else {
+                host = String.format("%s://%s", protocol, authority);
+            }
             var url = new Url(host);
 
-            if (UrlRepository.getUrls().stream().noneMatch(o -> o.getName().equals(host))) {
+            if (UrlRepository.findByName(host).isEmpty()) {
                 UrlRepository.save(url);
                 ctx.sessionAttribute("flash", "Страница успешно добавлена");
                 ctx.sessionAttribute("type", "success");
-                ctx.redirect(NamedRoutes.urlsPath());
             } else {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("type", "info");
-                ctx.redirect(NamedRoutes.urlsPath());
             }
+
+            ctx.redirect(NamedRoutes.urlsPath());
         }
     }
 }

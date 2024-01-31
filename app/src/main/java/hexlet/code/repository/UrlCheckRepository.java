@@ -1,5 +1,6 @@
 package hexlet.code.repository;
 
+import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 
 import java.sql.SQLException;
@@ -75,6 +76,31 @@ public class UrlCheckRepository extends BaseRepository {
                 return Optional.of(check);
             }
             return Optional.empty();
+        }
+    }
+
+    public static List<UrlCheck> getLastChecks() throws SQLException {
+        var sql = "SELECT u1.id, u1.url_id, u1.status_code, u1.h1, u1.title, u1.description, u1.created_at " +
+                "FROM url_checks u1 WHERE u1.created_at = " +
+                "(SELECT max(u2.created_at) from url_checks u2 WHERE u2.id = u1.id)";
+        try (var conn = dataSource.getConnection();
+            var stmt = conn.prepareStatement(sql)) {
+            var checks = stmt.executeQuery();
+            var result = new ArrayList<UrlCheck>();
+            while (checks.next()) {
+                var id = checks.getLong("id");
+                var urlId = checks.getLong("url_id");
+                var title = checks.getString("title");
+                var statusCode = checks.getInt("status_code");
+                var description = checks.getString("description");
+                var h1 = checks.getString("h1");
+                var createdAt = checks.getTimestamp("created_at");
+                var check = new UrlCheck(statusCode, title, h1, description, urlId);
+                check.setId(id);
+                check.setCreatedAt(createdAt);
+                result.add(check);
+            }
+            return result;
         }
     }
 }
