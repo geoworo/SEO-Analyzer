@@ -6,8 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 public class UrlCheckRepository extends BaseRepository {
     public static void save(UrlCheck check) throws SQLException {
@@ -78,15 +80,12 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
-    public static List<UrlCheck> getLastChecks() throws SQLException {
-        var sql = "SELECT u1.id, u1.url_id, u1.status_code, u1.h1, "
-                + "u1.title, u1.description, u1.created_at "
-                + "FROM url_checks u1 WHERE u1.created_at = "
-                + "(SELECT max(u2.created_at) from url_checks u2 WHERE u2.id = u1.id)";
+    public static Map<Long, UrlCheck> getLastChecks() throws SQLException {
+        var sql = "SELECT DISTINCT ON (url_id) * FROM url_checks ORDER BY url_id, created_at";
         try (var conn = dataSource.getConnection();
             var stmt = conn.prepareStatement(sql)) {
             var checks = stmt.executeQuery();
-            var result = new ArrayList<UrlCheck>();
+            var result = new LinkedHashMap<Long, UrlCheck>();
             while (checks.next()) {
                 var id = checks.getLong("id");
                 var urlId = checks.getLong("url_id");
@@ -98,7 +97,7 @@ public class UrlCheckRepository extends BaseRepository {
                 var check = new UrlCheck(statusCode, title, h1, description, urlId);
                 check.setId(id);
                 check.setCreatedAt(createdAt);
-                result.add(check);
+                result.put(id, check);
             }
             return result;
         }

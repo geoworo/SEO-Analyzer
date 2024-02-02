@@ -20,12 +20,8 @@ public class UrlController {
 
     public static void showUrls(Context ctx) throws SQLException {
         var urls = UrlRepository.getUrls();
-        var checks = new HashMap<Long, UrlCheck>();
         var lastChecks = UrlCheckRepository.getLastChecks();
-        for (var check : lastChecks) {
-            checks.put(check.getUrlId(), check);
-        }
-        var page = new UrlsPage(urls, checks);
+        var page = new UrlsPage(urls, lastChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setType(ctx.consumeSessionAttribute("type"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));
